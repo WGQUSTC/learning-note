@@ -1,0 +1,2 @@
+vcpu超分：分配给虚拟机的 vCPU 数量，超过了宿主机实际可用的物理 CPU（pCPU）数量
+mrif使用场景：当cpu超分场景时，有一些vcpu可能分配不到irq file，通过iommu把信息写到内存中，然后通过iommu发送中断给host，host收到中断之后调度vcpu去响应mrif，这样即使vcpu没有分配到irq file，也可以读到想要的信息
