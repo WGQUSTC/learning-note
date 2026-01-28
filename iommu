@@ -3,4 +3,5 @@ mrif使用场景：当cpu超分场景时，有一些vcpu可能分配不到irq fi
 虚拟机直通：设备直通是指设备直接分配给虚拟机，此时stage2是要使用的。stage1是相当于host虚拟给vm的翻译，前提是vm支持viommu，其实用的就是stage1。
 虚拟化：VM内部也想用iommu：其实就是host虚拟出来给vm用的，软件看来就是viommu，实际是iommu的stage1.  vf发出gva经过viommu翻译成gpa，每次配置viommu都会trap到host，其实就是配置stage1.
 初始化：小核初始化生成iommu拓扑信息，配置Iommu.bare-->大核在coreboot根据拓扑信息生成acpi-->opensbi--->linux boot--->kernal/os解析acpi，初始化iommu
+在开启t2gpa=1，iommu返回的是gpa而不是spa。这样的话p2p是不允许直接使用gpa的需要通过pcie acs强制走iommu。Hypervisors that configure T2GPA to 1 must ensure through protocol-specific means that translated accesses are routed through the host such that the IOMMU may translate the GPA and then route the transaction based on PA to memory or to a peer device. For PCIe, for example, the Access Control Service (ACS) must be configured to always redirect peer-to-peer (P2P) requests upstream to the host.
 
