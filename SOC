@@ -1,0 +1,1 @@
+EHSM和caliptra都是对flash验签和远程认证（当然也有VM对设备的安全认证，目前只是对flash的固件认真保证是可信的没有被修改过），类似SSH https://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html，本质都是加解密算法
