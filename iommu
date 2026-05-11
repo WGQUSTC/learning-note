@@ -13,3 +13,12 @@ IOMMU初始化：识别寄存器地址范围，中断模式，注册虚拟中断
 IOMMU community issue summary：
 1. get attribute重写priv=pidv & priv ？ s ：u。在翻译完成的时候，rsp的priv=orig_pidv & priv。假如pidv=0,priv=1那么在iommu中当成非特权，返回的时候用请求方的方式返回
 2. https://github.com/riscv-non-isa/riscv-iommu/issues/750    意思是如果带s，会把range内的都清掉。不带s的，只会对addr相关的路径无效
+
+
+需要注意的点：
+1. 总共dtim的trans token不超过256，每个inv token是16
+2. laid是unique的，来自与pcie哪里需要确认的
+3. cache indx对于bdf和segment的hash是有区别的，bus num权重更大
+4. napot和svadu只更新第一个entry
+5. 带宽计算公式---outstanding x burstlen x datawidth = expectationBW x roundtrip latency
+6. 
