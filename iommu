@@ -6,7 +6,15 @@ IOMMU软件使用：
 5. 初始化：小核初始化生成iommu拓扑信息，配置Iommu.bare-->大核在coreboot根据拓扑信息生成acpi-->opensbi--->linux boot--->kernal/os解析acpi，初始化iommu
 6. 在开启t2gpa=1，iommu返回的是gpa而不是spa。这样的话p2p是不允许直接使用gpa的需要通过pcie acs强制走iommu。Hypervisors that configure T2GPA to 1 must ensure through protocol-specific means that translated accesses are routed through the host such that the IOMMU may translate the GPA and then route the transaction based on PA to memory or to a peer device. For PCIe, for example, the Access Control Service (ACS) must be configured to always redirect peer-to-peer (P2P) requests upstream to the host.
 
-IOMMU初始化：识别寄存器地址范围，中断模式，注册虚拟中断号，申请内存，创建页表，创建cq/fq/pq，注册pmu中断处理函数，注册子系统
+IOMMUkernal和驱动：
+1. 驱动和kernal的理解参照https://www.cnblogs.com/polin/p/17159858.html
+2. 初始化：识别寄存器地址范围，中断模式，注册虚拟中断号，申请内存，创建页表，创建cq/fq/pq，注册pmu中断处理函数，注册子系统
+3. firmware给kernal的信息：1个是RIMT表描述RC到IOMMU的ID mapping tree，另一个是DSDT表描述设备的资源和本体。驱动执行的操作：
+   a. 从acpi也就是firmware获取寄存器地址范围
+   b. 注册中断
+   c. 申请内存，创建DDT页表，配置ddtp
+   d. 申请内存创建cq,fq,pq等
+
 
 
 
@@ -21,4 +29,4 @@ IOMMU community issue summary：
 3. cache indx对于bdf和segment的hash是有区别的，bus num权重更大
 4. napot和svadu只更新第一个entry
 5. 带宽计算公式---outstanding x burstlen x datawidth = expectationBW x roundtrip latency
-6. 
+6. ptw是64bit也就是8byte对齐的，假如要读取的地址分别是{vpn1,vpn0}和{vpn1,vpn0+8}那么最终操作得到的ptw addr也是地址相差8，ptw entry相邻，所以可以一起读回来
