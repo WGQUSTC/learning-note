@@ -30,3 +30,4 @@ IOMMU community issue summary：
 4. napot和svadu只更新第一个entry
 5. 带宽计算公式---outstanding x burstlen x datawidth = expectationBW x roundtrip latency
 6. ptw是64bit也就是8byte对齐的，假如要读取的地址分别是{vpn1,vpn0}和{vpn1,vpn0+8}那么最终操作得到的ptw addr也是地址相差8，ptw entry相邻，所以可以一起读回来
+7. 带宽计算：gen6 pciex16lane最大是128GB，如果读写同时存在的话，这128GB大部分都是写data占据的，而读请求包占128GB的比例很小。但是到iommu感知到的带宽就是128GBX2=256GB
