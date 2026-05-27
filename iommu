@@ -19,7 +19,7 @@ IOMMUkernal和驱动：
    b. 注册中断
    c. 申请内存，创建DDT页表，配置ddtp
    d. 申请内存创建cq,fq,pq等
-
+4. ARM的FEAT_HDBSS是记录stage2产生的dirty page，方便虚拟机热迁移时拷贝。热迁移是为了保证VM从一个HOST切换到另一个host时不感知中断，分为pre copy and post copy。使用precopy时HDBSS就有用了
 
 
 
