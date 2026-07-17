@@ -10,6 +10,7 @@ IOMMU软件使用：
 6. 在开启t2gpa=1，iommu返回的是gpa而不是spa。这样的话p2p是不允许直接使用gpa的需要通过pcie acs强制走iommu。Hypervisors that configure T2GPA to 1 must ensure through protocol-specific means that translated accesses are routed through the host such that the IOMMU may translate the GPA and then route the transaction based on PA to memory or to a peer device. For PCIe, for example, the Access Control Service (ACS) must be configured to always redirect peer-to-peer (P2P) requests upstream to the host.
 7. 一般只有在虚拟机重启的时候会发起inv，但是有多个虚拟机的时候一个虚拟机重启，其他的虚拟机还在使用，那么就可能出现正在进行的翻译时发起的invalidation
 8. PCIE直通就是H2H，4x4lane
+9. 为什么MSI和normal table不一样？其一是因为当需要vcpu从cpu0迁移到cpu2时，翻译表的映射不变，但是vcpu原本中断映射到cpu0需要变到cpu2，这样是需要改msi table其他table不需要改变。其二是便于mrif使用。
 
 IOMMUkernal和驱动：
 1. 驱动和kernal的理解参照https://www.cnblogs.com/polin/p/17159858.html
