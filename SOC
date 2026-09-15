@@ -8,3 +8,4 @@ EHSM和caliptra都是对flash验签和远程认证（当然也有VM对设备的�
       x态只有0/1-x和x-0/1的，中间的x态都没有动态功耗
   4. ICG插入的原则，多少bit会插入icg依照面积评估还是功耗来评估，和工艺是否有关系
       min bit的限制考虑是面积，max bit是timing。max bit是因为单个使能信号驱动的bit过多，影响timing（考虑因为是fanout过大影响的timing），后端要求手工拆小，要么允许综合器自动复制使能条件，需要和后端对齐，然后就可以把这个检查关掉。一般icg cell也包含max fanout，pa算法会根据这个fanout来判断是否插入
+  5. ICG插入时和波形无关，ICG插入时不会看enable的复杂性，只要enable满足timing。如果是只有if(en1 & en2)和if(en1 & en3)，那么ICG会提取common enable。如果是if多个else if，那么ICG的使能是所有条件的和。common enable的理解是比实际enable更宽泛，意思就是说条件跳转的时候必须en，en但是可以不跳转。还需要注意看D端的逻辑，如果D端前的组合逻辑中有多个if，这个if也会被考虑到common enable中
