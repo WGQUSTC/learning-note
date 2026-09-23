@@ -44,3 +44,4 @@ IOMMU community issue summary：
 1. 为啥ARM驱动要求支持SVA必须要有ATS capability
 2. ARM PRI stop marker和PCIE要求不一致，是错误的
 3. TLB有s1 pgz, s2 pgz，假如s1 pgz=1G,而S2是4KB，当inv s1时需要按照s1 pgz来inv，那ATS存的是小者，当有inv无效的是1G范围，ATS是否有旧的映射保留了
+4. Page demotion or promotion does not require a make before break.4KB->2MB, 2MB->4KB
