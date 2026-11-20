@@ -1,0 +1,11 @@
+例如芯片启动时：
+1. Boot ROM 中固化可信的公钥，或者固化用于验证证书链的根公钥。
+2. Flash 中存放 Bootloader 镜像及其数字签名。
+3. Boot ROM 读取 Bootloader 镜像。
+4. 使用 Hash 算法计算镜像摘要。
+5. 使用公钥验证镜像签名。
+6. 验证成功才允许执行 Bootloader；失败则拒绝启动或进入安全恢复流程。
+这样可以防止攻击者随意修改 Flash 中的 Bootloader，再让芯片执行恶意代码。
+签名：signature= sign(private_key, hash(message))
+验签：verify(public_key, message,signature)=ture，那么成功，可以启动。消息是可见的，只是对消息是否被篡改的验证
+而私钥是在HSM中的，给firmware签名的，而是软件向HSM发送签名请求，让HSM在内部使用私钥完成签名，只把签名结果返回给软件
