@@ -1,6 +1,6 @@
 1. 为什么ARM有了GPT后还做了DPT？
 https://github.com/riscv-non-isa/riscv-ap-tee-io/issues/197，这个issue就验证了我的回答
-主要是：full ats绕过了s1 and s2，无法通过IOMPT实现不同TVM属于一个SD的隔离
+主要是：DPT 不是单纯为了隔离同一个 SD 下的不同 TVM；它主要解决的是：当设备绕过 SMMU 的常规地址翻译、直接提交 SPA 时，SMMU 如何确认这个物理地址属于该设备当前被授权访问的 TVM。full ats绕过了s1 and s2，无法通过IOMPT实现不同TVM属于一个SD的隔离
 个人理解，DPT 主要是为 Full ATS 场景提供额外的设备访问保护。在 Full ATS 场景下，SMMU 返回的是 SPA给 PCIe 设备。之后设备发起 ATST（Address Translation Service Translation） 请求再次进入 SMMU 时，请求中携带的已经是物理地址，因此不会再经过 SMMU 的 STE 和完整的两级地址翻译。虽然之前的 ATS translation 已经经过了 STE 和地址翻译，但后续真正的 ATST transaction 没有再次经过 Stage 2 translation。因此，即使 ATST 来自同一个 device interface，SMMU 也无法仅通过当前的物理地址判断：这个 PA 是否属于该 device interface 所关联的 Realm 的 PAS / memory range。
 所以这里的核心问题可以理解为：
 Full ATS 后续的 ATST transaction 绕过了由 RMM 管理的 Stage 2 translation，因此缺少了一层将 device interface 与 Realm memory footprint 关联起来的检查。原文提到，对于一次 transaction，并没有现成的机制能够保证它只能访问该 device interface 被允许访问的那部分内存空间。因此引入 DPT（Device Permission Table），为 device interface 与 Realm memory footprint 之间建立一个额外的关联。DPT 可以根据 device interface / VMID / PA granule 等信息检查当前访问是否被允许，从而防止 Full ATS 场景下的 ATST 请求访问到不属于该设备、或者该设备没有被配置允许访问的 Realm 内存空间。简单来说：
